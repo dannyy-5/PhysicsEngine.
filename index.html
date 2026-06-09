@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Five Nights at Epstein's - Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: #222;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 3px solid #b71c1c;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .game-wrapper {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #000;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        footer {
+            background: #111;
+            color: #999;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            border-top: 1px solid #333;
+        }
+        
+        .fallback {
+            display: none;
+            padding: 20px;
+            background: #ffebee;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        .fallback a {
+            color: #d32f2f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .fallback a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .game-wrapper {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Five Nights at Epstein's</h1>
+            <p>Can you survive the night?</p>
+        </header>
+        
+        <div class="game-wrapper">
+            <iframe 
+                src="https://freedomgamingzone.github.io/five-nights-at-epsteins/" 
+                allowfullscreen
+                allow="autoplay; fullscreen">
+                <div class="fallback">
+                    <p>Your browser does not support iframes.</p>
+                    <p><a href="https://freedomgamingzone.github.io/five-nights-at-epsteins/">Click here to play the game directly.</a></p>
+                </div>
+            </iframe>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 Gaming Zone. Powered by GitHub Pages.</p>
+        </footer>
+    </div>
+</body>
+</html>
