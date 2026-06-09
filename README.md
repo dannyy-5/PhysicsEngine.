@@ -1,6 +1,6 @@
-# 5NAE - Five Nights at Epstein's Game
+# Hacker Physics: RGB Restored
 
-A web-based game hosting page powered by GitHub Pages.
+A high-performance terminal physics visualizer with interactive controls and multiple color palettes.
 
 ## 🎮 Play the Game
 
@@ -8,11 +8,34 @@ A web-based game hosting page powered by GitHub Pages.
 
 Simply visit the URL above to play the game directly in your browser.
 
+## 🎮 How to Play
+
+- **SPACEBAR** - Toggle the System Console (control panel)
+- **MOUSE DRAG** - Click and drag to manipulate particle orbits
+- **NUMBER KEYS (0-9)** - Adjust particle density
+- Use the **System Console** to customize effects:
+  - **SPEED** - Control particle velocity
+  - **RADIUS** - Adjust orbital pull radius
+  - **PULL** - Modify mouse attraction force
+  - **BLUR** - Motion blur intensity
+  - **HUE** - Color shift speed
+  - **GLITCH** - Add distortion effects
+  - **PALETTES** - Choose from 10+ color themes (RGB, FIRE, MATRIX, CYBER, etc.)
+
+## 🎨 Features
+
+- **10+ Color Palettes**: RGB Rainbow, Fire, Deep Sea, Matrix, Cyber, Vapor, Blood, Gold, Ghost, Toxic
+- **Interactive Physics**: Click and drag to control particle behavior
+- **High Performance**: Optimized canvas rendering with motion blur
+- **Real-time Controls**: Adjust all parameters without reloading
+- **Fullscreen Visuals**: Responsive design for any screen size
+- **Custom Cursor**: Glowing crosshair with blend modes
+
 ## 📋 Setup Instructions
 
 This repository is configured to be hosted on GitHub Pages automatically.
 
-### To Enable GitHub Pages:
+### To Enable GitHub Pages (if not already enabled):
 
 1. Go to your repository settings: https://github.com/dannyy-5/5NAE/settings
 2. Scroll down to the **"Pages"** section
@@ -20,23 +43,13 @@ This repository is configured to be hosted on GitHub Pages automatically.
    - Branch: `main`
    - Folder: `/ (root)`
 4. Click **Save**
-5. Wait for GitHub to build and deploy (usually takes 1-2 minutes)
-6. Your game will be live at: `https://dannyy-5.github.io/5NAE/`
 
 ## 📁 File Structure
 
-- `index.html` - Main game page
+- `index.html` - Main game (fully self-contained)
 - `README.md` - This file
-
-## 🌐 Access Methods
-
-- **Direct Link:** https://dannyy-5.github.io/5NAE/
-- **Custom Domain:** (Optional) You can configure a custom domain in repository settings under Pages
-
-## 🔗 Game Source
-
-The game is embedded from: https://freedomgamingzone.github.io/five-nights-at-epsteins/
+- `.nojekyll` - Tells GitHub Pages to skip Jekyll processing
 
 ---
 
-Once you enable GitHub Pages from your repository settings, this will be publicly accessible to anyone on the internet!
+**Powered by GitHub Pages. Fully playable in any modern browser!**

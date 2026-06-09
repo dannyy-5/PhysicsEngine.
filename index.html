@@ -2,126 +2,175 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Five Nights at Epstein's - Game</title>
+    <title>Hacker Physics: RGB Restored</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body { margin: 0; padding: 0; overflow: hidden; background: #000; cursor: none; }
+        canvas { display: block; }
+        #dot-cursor {
+            position: fixed; width: 8px; height: 8px; background: #fff;
+            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
+            z-index: 1000; box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+            mix-blend-mode: difference;
         }
-        
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+        #help-modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0, 10, 0, 0.98); color: #0f0; padding: 20px;
+            font-family: 'Courier New', monospace; border: 1px solid #0f0;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.4); z-index: 1100; min-width: 400px;
         }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            background: #222;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom: 3px solid #b71c1c;
-        }
-        
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        header p {
-            font-size: 1.1em;
-            opacity: 0.95;
-        }
-        
-        .game-wrapper {
-            width: 100%;
-            height: 600px;
-            border: 2px solid #000;
-            overflow: hidden;
-            background: #000;
-        }
-        
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        footer {
-            background: #111;
-            color: #999;
-            padding: 20px;
-            text-align: center;
-            font-size: 0.9em;
-            border-top: 1px solid #333;
-        }
-        
-        .fallback {
-            display: none;
-            padding: 20px;
-            background: #ffebee;
-            border-left: 4px solid #d32f2f;
-        }
-        
-        .fallback a {
-            color: #d32f2f;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        
-        .fallback a:hover {
-            text-decoration: underline;
-        }
-        
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8em;
-            }
-            
-            .game-wrapper {
-                height: 400px;
-            }
-        }
+        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
+        .preset-btn { background: #010; border: 1px solid #060; color: #0a0; padding: 8px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: bold; }
+        .preset-btn.active { border-color: #fff; color: #fff; background: #040; }
+        .control-group { margin: 12px 0; }
+        .label-row { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px; }
+        input[type=range] { width: 100%; appearance: none; background: #020; height: 4px; border: 1px solid #040; outline: none; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 10px; height: 16px; background: #0f0; }
+        #reset-btn { width: 100%; padding: 10px; background: #020; color: #f00; border: 1px solid #f00; font-family: 'Courier New', monospace; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎮 Five Nights at Epstein's</h1>
-            <p>Can you survive the night?</p>
-        </header>
-        
-        <div class="game-wrapper">
-            <iframe 
-                src="https://freedomgamingzone.github.io/five-nights-at-epsteins/" 
-                allowfullscreen
-                allow="autoplay; fullscreen">
-                <div class="fallback">
-                    <p>Your browser does not support iframes.</p>
-                    <p><a href="https://freedomgamingzone.github.io/five-nights-at-epsteins/">Click here to play the game directly.</a></p>
-                </div>
-            </iframe>
-        </div>
-        
-        <footer>
-            <p>&copy; 2026 Gaming Zone. Powered by GitHub Pages.</p>
-        </footer>
+    <div id="dot-cursor"></div>
+    <div id="help-modal">
+        <h2 style="text-align:center; margin:0 0 15px 0; font-size: 18px;">SYSTEM CONSOLE</h2>
+        <div class="preset-grid" id="preset-container"></div>
+        <div id="slider-container"></div>
+        <button id="reset-btn">PURGE SETTINGS</button>
     </div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const modal = document.getElementById('help-modal');
+        const dot = document.getElementById('dot-cursor');
+        
+        let cfg = { speed: 1.5, radius: 1, pull: 1.2, blur: 1, hue: 1.5, glitch: 0, density: 9, palette: 'RGB' };
+
+        const palettes = {
+            'RGB': 'rainbow', 
+            'FIRE': ['#FF4500', '#FF8C00', '#FFD700'], 
+            'DEEP SEA': ['#4B0082', '#0000FF', '#00FFFF'],
+            'MATRIX': ['#00FF00', '#003300', '#008F11'], 
+            'CYBER': ['#FF00FF', '#00FFFF', '#FFFFFF'], 
+            'VAPOR': ['#FF71CE', '#01CDFE', '#05FFA1'],
+            'BLOOD': ['#8B0000', '#FF0000', '#330000'], 
+            'GOLD': ['#D4AF37', '#FFD700', '#B8860B'], 
+            'GHOST': ['#E0FFFF', '#F0F8FF', '#708090'], 
+            'TOXIC': ['#ADFF2F', '#32CD32', '#000000']
+        };
+
+        const sliderKeys = ['speed', 'radius', 'pull', 'blur', 'hue', 'glitch'];
+        sliderKeys.forEach(key => {
+            const div = document.createElement('div');
+            div.className = 'control-group';
+            div.innerHTML = `<div class="label-row"><span>${key.toUpperCase()}</span><span id="${key}-val">${cfg[key]}</span></div>
+                             <input type="range" id="${key}-slider" min="0" max="5" step="0.1" value="${cfg[key]}">`;
+            document.getElementById('slider-container').appendChild(div);
+            div.querySelector('input').addEventListener('input', (e) => {
+                cfg[key] = parseFloat(e.target.value);
+                document.getElementById(`${key}-val`).innerText = cfg[key].toFixed(1);
+            });
+        });
+
+        Object.keys(palettes).forEach(pName => {
+            const btn = document.createElement('button');
+            btn.className = 'preset-btn' + (pName === 'RGB' ? ' active' : '');
+            btn.innerText = pName;
+            btn.onclick = () => { cfg.palette = pName; document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
+            document.getElementById('preset-container').appendChild(btn);
+        });
+
+        document.getElementById('reset-btn').onclick = () => location.reload();
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*';
+        let streams = [];
+        let globalHue = 0;
+        let mouse = { x: -1000, y: -1000, down: false };
+
+        window.addEventListener('mousemove', (e) => { 
+            mouse.x = e.clientX; mouse.y = e.clientY;
+            dot.style.left = e.clientX + 'px'; dot.style.top = e.clientY + 'px';
+        });
+        window.addEventListener('mousedown', (e) => { if(modal.style.display !== 'block') mouse.down = true; });
+        window.addEventListener('mouseup', () => mouse.down = false);
+        window.addEventListener('keydown', (e) => {
+            if (e.key === ' ') modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+            if (!isNaN(e.key) && e.key !== ' ') { cfg.density = parseInt(e.key); }
+        });
+
+        function createStream(y = -20) {
+            return {
+                x: Math.random() * canvas.width,
+                y: y,
+                vx: 0, vy: 1.5,
+                orbitOffset: Math.random() * 360,
+                char: chars[Math.floor(Math.random() * chars.length)]
+            };
+        }
+
+        // High-density initial seed
+        const initialCount = (canvas.width / 4) * cfg.density;
+        for(let i=0; i < initialCount; i++) {
+            streams.push(createStream(Math.random() * canvas.height));
+        }
+
+        function draw() {
+            // Motion Blur logic
+            ctx.fillStyle = `rgba(0, 0, 0, ${0.25 - (cfg.blur * 0.04)})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Hue Shift logic
+            globalHue = (globalHue + cfg.hue) % 360;
+
+            // Maximum Constant Spawning
+            const target = (canvas.width / 4) * cfg.density;
+            while (streams.length < target) {
+                streams.push(createStream(-20));
+            }
+
+            for (let i = 0; i < streams.length; i++) {
+                let s = streams[i];
+                if (Math.random() < cfg.glitch * 0.05) s.char = chars[Math.floor(Math.random() * chars.length)];
+
+                if (mouse.down) {
+                    const dx = mouse.x - s.x; const dy = mouse.y - s.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                    const targetDist = (cfg.radius * 80) + (s.orbitOffset % 30) + 10;
+                    const pullForce = (dist > targetDist) ? (0.2 * cfg.pull) : (-0.1 * cfg.pull);
+                    s.vx += (dx / dist) * pullForce; s.vy += (dy / dist) * pullForce;
+                } else {
+                    s.vy += 0.05 * cfg.speed;
+                }
+
+                s.x += (s.vx * Math.abs(cfg.speed)) + (Math.random() - 0.5) * cfg.glitch * 2;
+                s.y += (s.vy * cfg.speed) + (Math.random() - 0.5) * cfg.glitch * 2;
+                
+                s.vx *= 0.99;
+                s.vy *= 0.99;
+
+                // COLOR LOGIC
+                const theme = palettes[cfg.palette];
+                if (theme === 'rainbow') {
+                    // Full spectrum visible RGB
+                    ctx.fillStyle = `hsl(${(globalHue + s.orbitOffset) % 360}, 100%, 70%)`;
+                } else {
+                    ctx.fillStyle = theme[Math.floor(Math.random() * theme.length)];
+                }
+
+                ctx.font = '8px monospace';
+                ctx.fillText(s.char, s.x, s.y);
+
+                if (s.y > canvas.height + 100 || s.y < -300 || s.x < -300 || s.x > canvas.width + 300) {
+                    streams.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+        window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    </script>
 </body>
 </html>
